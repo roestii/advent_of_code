@@ -52,9 +52,6 @@ pub fn handle_input(input: Vec<&str>) -> Result<(), ()> {
     lines.iter()
         .flatten()
         .for_each(|point| {
-            if point.x == 1 && point.y == 1 {
-                println!("{:?}", point);
-            }
             let (x, y) = (point.x as usize, point.y as usize);
             board[y][x] += 1; 
         });
@@ -131,10 +128,9 @@ fn parse_diagonal(diagonals: Vec<&(Point, Point)>) -> Vec<Vec<Point>> {
 fn parse_vertical(verticals: Vec<&(Point, Point)>) -> Vec<Vec<Point>> {
     let vlines = verticals.iter()
         .fold(Vec::new(), |mut acc, (vstart, vend)| {
-            let higher = std::cmp::max(vstart.y, vend.y); 
-            let lower = std::cmp::min(vstart.y, vend.y);
+            let ystep = create_range(vstart.y, vend.y);
 
-            let line = (lower..=higher).fold(Vec::new(), |mut points, i| {
+            let line = ystep.fold(Vec::new(), |mut points, i| {
                 points.push(Point::new(vstart.x, i)); 
                 points
             });
@@ -147,10 +143,9 @@ fn parse_vertical(verticals: Vec<&(Point, Point)>) -> Vec<Vec<Point>> {
 fn parse_horizontal(horizontals: Vec<&(Point, Point)>) -> Vec<Vec<Point>> {
     let hlines = horizontals.iter()
         .fold(Vec::new(), |mut acc, (hstart, hend)| {
-            let higher = std::cmp::max(hstart.x, hend.x); 
-            let lower = std::cmp::min(hstart.x, hend.x);
+            let xstep = create_range(hstart.x, hend.x);
 
-            let line = (lower..=higher).fold(Vec::new(), |mut points, i| {
+            let line = xstep.fold(Vec::new(), |mut points, i| {
                 points.push(Point::new(i, hstart.y)); 
                 points
             });
