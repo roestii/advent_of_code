@@ -138,46 +138,42 @@ pub fn handle_input(input: Vec<&str>) {
                     _ => {},
                 }
             }
-            let complex_digits: Vec<&String> = patterns.iter()
+            let complex_patterns : Vec<&String> = patterns.iter()
                 .filter(|pattern| SimpleDigit::get_digit(pattern.to_string()).is_none())
                 .collect();
-            let complex_digits = ComplexDigit::get_digits(complex_digits, one, four);
+            let complex_digits = ComplexDigit::get_digits(complex_patterns, one, four);
 
-            let number = four_digit.iter()
-                .rev()
-                .enumerate()
-                .fold(0, |mut sum, (i, digit)| {
-                    if let Some(simple_digit) = SimpleDigit::get_digit(digit.to_string()) {
-                        return sum + match simple_digit {
-                            SimpleDigit::One(_) => 1 * 10u32.pow(i as u32),
-                            SimpleDigit::Four(_) => 4 * 10u32.pow(i as u32),
-                            SimpleDigit::Seven(_) => 7 * 10u32.pow(i as u32),
-                            SimpleDigit::Eight(_) => 8 * 10u32.pow(i as u32),
-                        }
-                    }
-
-                    for complex_digit in &complex_digits {
-                        match complex_digit {
-                            ComplexDigit::Zero(pattern) => { if digit == pattern { sum += 0 } },
-                            ComplexDigit::Two(pattern) => { if digit == pattern { sum += 2 * 10u32.pow(i as u32) } },
-                            ComplexDigit::Three(pattern) => { if digit == pattern { sum += 3 * 10u32.pow(i as u32) } },
-                            ComplexDigit::Five(pattern) => { if digit == pattern { sum += 5 * 10u32.pow(i as u32) } },
-                            ComplexDigit::Six(pattern) => { if digit == pattern { sum += 6 * 10u32.pow(i as u32) } },
-                            ComplexDigit::Nine(pattern) => { if digit == pattern { sum += 9 * 10u32.pow(i as u32) } },
-                        }
-                    }
-                    sum
-                });
-            acc.push(number);
+            acc.push(calculate_number(four_digit.to_vec(), complex_digits));
             acc
         });
+    println!("{}", numbers.iter().fold(0, |sum, number| sum + number));
+}
 
-    let simple_digits = values.iter()
-        .fold(0, |mut sum, (_, four_digit)| {
-            sum += four_digit.iter()
-                .filter(|digit| digit.len() != 5 && digit.len() != 6)
-                .count();
+fn calculate_number(four_digit: Vec<String>, complex_digits: Vec<ComplexDigit>) -> u32 {
+    let number = four_digit.iter()
+        .rev()
+        .enumerate()
+        .fold(0, |mut sum, (i, digit)| {
+            if let Some(simple_digit) = SimpleDigit::get_digit(digit.to_string()) {
+                return sum + match simple_digit {
+                    SimpleDigit::One(_) => 1 * 10u32.pow(i as u32),
+                    SimpleDigit::Four(_) => 4 * 10u32.pow(i as u32),
+                    SimpleDigit::Seven(_) => 7 * 10u32.pow(i as u32),
+                    SimpleDigit::Eight(_) => 8 * 10u32.pow(i as u32),
+                }
+            }
+
+            for complex_digit in &complex_digits {
+                match complex_digit {
+                    ComplexDigit::Zero(pattern) => { if digit == pattern { sum += 0 } },
+                    ComplexDigit::Two(pattern) => { if digit == pattern { sum += 2 * 10u32.pow(i as u32) } },
+                    ComplexDigit::Three(pattern) => { if digit == pattern { sum += 3 * 10u32.pow(i as u32) } },
+                    ComplexDigit::Five(pattern) => { if digit == pattern { sum += 5 * 10u32.pow(i as u32) } },
+                    ComplexDigit::Six(pattern) => { if digit == pattern { sum += 6 * 10u32.pow(i as u32) } },
+                    ComplexDigit::Nine(pattern) => { if digit == pattern { sum += 9 * 10u32.pow(i as u32) } },
+                }
+            }
             sum
         });
-    println!("{}", numbers.iter().fold(0, |sum, number| sum + number));
+    number
 }
