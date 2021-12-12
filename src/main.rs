@@ -1,6 +1,6 @@
-mod day7;
+mod day8;
 
 fn main() {
-    let input: Vec<&str> = include_str!("day7.input").lines().collect();
-    day7::handle_input(input);
+    let input: Vec<&str> = include_str!("day8.input").lines().collect();
+    day8::handle_input(input);
 }
